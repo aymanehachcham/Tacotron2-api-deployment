@@ -1,0 +1,7 @@
+numpy
+scipy
+matplotlib
+librosa==0.6.0
+inflect==0.2.5 
+Unidecode==1.0.22
+pillow
