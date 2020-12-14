@@ -7,7 +7,7 @@ import uuid
 import numpy as np
 import torch.nn as nn
 from .tacotron_model import Tacotron2
-from .glow import WaveGlow
+from .waveglow import WaveGlow
 from .text_utils import Hparams, symbols
 from .text_utils import text_to_sequence
 from scipy.io.wavfile import write
@@ -36,7 +36,7 @@ tacotron_hparams = Hparams({
     'attention_dim': 128,
     'decoder_rnn_dim': 1024,
     'prenet_dim': 256,
-    'max_decoder_steps': 1000,
+    'max_decoder_steps': 7000,
     'gate_threshold': 0.5,
     'p_attention_dropout': 0.1,
     'p_decoder_dropout': 0.1,
@@ -75,8 +75,8 @@ class TacotronHandler(nn.Module):
         self.tacotron_model.to(self.device)
         self.tacotron_model.eval()
 
-    def _load_waveglow(self, is_fp16: bool):
-        waveglow_checkpoint = torch.load(os.path.join(_WORK_DIR, _MODEL_DIR, 'waveglow.pt'))
+    def _load_waveglow(self, checkpoint_file, is_fp16: bool):
+        waveglow_checkpoint = torch.load(os.path.join(_WORK_DIR, _MODEL_DIR, checkpoint_file))
         waveglow_model = WaveGlow(
             n_mel_channels=waveglow_params.n_mel_channels,
             n_flows=waveglow_params.n_flows,
@@ -85,7 +85,8 @@ class TacotronHandler(nn.Module):
             n_early_size=waveglow_params.n_early_size,
             WN_config=WN_config
         )
-        self.waveglow.load_state_dict(waveglow_checkpoint['state_dict'])
+        self.waveglow = waveglow_model
+        self.waveglow.load_state_dict(waveglow_checkpoint)
         self.waveglow = waveglow_model.remove_weightnorm(waveglow_model)
         self.waveglow.to(self.device)
         self.waveglow.eval()
@@ -103,7 +104,10 @@ class TacotronHandler(nn.Module):
             checkpoint_file='tacotron2.pt',
             hparams_config=tacotron_hparams)
 
-        self._load_waveglow(is_fp16=False)
+        self._load_waveglow(
+            is_fp16=False,
+            checkpoint_file='waveglow_weights.pt')
+
         self.initialized = True
 
         logger.debug('Tacotron and Waveglow models successfully loaded!')
