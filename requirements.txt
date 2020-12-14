@@ -1,7 +1,11 @@
-numpy
-scipy
-matplotlib
-librosa==0.6.0
-inflect==0.2.5 
-Unidecode==1.0.22
-pillow
+# numpy
+# scipy
+# matplotlib
+# librosa==0.6.0
+# inflect==0.2.5
+# Unidecode==1.0.22
+# pillow
+Django>=3.0.6,<3.1
+# uWSGI>=2.0.18,<2.1
+
+
