@@ -15,9 +15,10 @@ from scipy.io.wavfile import write
 
 logger = logging.getLogger(__name__)
 
+
 _WORK_DIR = 'Models/'
 _MODEL_DIR = 'model_checkpoints'
-_AUDIO_DIR = './Audio_Outputs/'
+_AUDIO_DIR = 'Audio/'
 
 tacotron_hparams = Hparams({
     'mask_padding': True,
@@ -113,7 +114,10 @@ class TacotronHandler(nn.Module):
         logger.debug('Tacotron and Waveglow models successfully loaded!')
 
     def preprocess(self, text_seq):
-        sequence = np.array(text_to_sequence(text_seq, ['english_cleaners']))[None, :]
+        text = text_seq
+        if text_seq[-1].isalpha() or text_seq[-1].isspace():
+            text = text_seq + '.'
+        sequence = np.array(text_to_sequence(text, ['english_cleaners']))[None, :]
         sequence = torch.from_numpy(sequence).to(device=self.device, dtype=torch.int64)
         return sequence
 
@@ -124,9 +128,10 @@ class TacotronHandler(nn.Module):
             audio = self.waveglow.infer(mel_output_postnet, sigma=0.666)
         return audio, time.time() - start_inference_time
 
-    def postprocess(self, inference_output, filename):
+    def postprocess(self, inference_output):
         audio_numpy = inference_output[0].data.cpu().numpy()
-        path = os.path.join(_AUDIO_DIR, '{}{}.wav'.format(filename, uuid.uuid4().hex))
-        write(path, 22050, audio_numpy)
+        path = os.path.join(_AUDIO_DIR, 'tts_output_{}.wav'.format(uuid.uuid1()))
+        print(path)
+        write(path, tacotron_hparams.sampling_rate, audio_numpy)
         return path
 

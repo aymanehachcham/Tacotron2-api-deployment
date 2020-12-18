@@ -26,19 +26,21 @@ def tts_transcription(request):
     input_sequence = tacotron_handler.preprocess(text)
 
     output_audio, inference_time = tacotron_handler.inference(input_sequence)
-    store_path = tacotron_handler.postprocess(output_audio, filename='tts_output')
+    store_path = tacotron_handler.postprocess(output_audio)
 
     audio = TTSSound.objects.create(
         audio_join=store_path,
         text_content=text,
         inference_time=inference_time
     )
+    audio.save()
     serializer = TTSOutputSerializer(audio)
     return Response(serializer.data, status=status.HTTP_200_OK)
+    # return Response('hello', status=status.HTTP_200_OK)
 
 @api_view(['DELETE'])
 def empty_folder(request):
-    folder_input = 'Audio_Outputs/'
+    folder_input = 'Audio/'
     for filename in os.listdir(folder_input):
         file_path = os.path.join(folder_input, filename)
         try:
