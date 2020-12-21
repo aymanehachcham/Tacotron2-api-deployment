@@ -22,5 +22,5 @@ from . import settings
 urlpatterns = [
     path('admin/', admin.site.urls),
     path(r'API/', include('API.urls')),
-    url(r'^API/Audio/(?P<path>.*)$', serve, {'document_root': settings.MEDIA_ROOT}),
+    url(r'^API/static/(?P<path>.*)$', serve, {'document_root': settings.MEDIA_URL}),
 ]

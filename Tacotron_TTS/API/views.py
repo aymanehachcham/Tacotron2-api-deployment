@@ -14,12 +14,25 @@ tacotron_handler = TacotronHandler()
 tacotron_handler.initialize()
 
 # Create your views here.
+
+"""
+Simply testing if the model is correctly connected to the API
+"""
 @api_view(['GET'])
 @never_cache
 def test_api(request):
     return Response({'response':"You are successfully connected to Peer API"})
 
 
+"""
+Requesting a TTS transcription from an input text
+returns a specific serializer with the following info:
+    - uuid: Unique ID for each TTS output
+    - text_content: The textual content for each request
+    - audio_join: The following TTS transcription output resulting from the sent text
+    - inference_time: The time spent for inference
+    - created_at: DateTime of object creation 
+"""
 @api_view(['POST'])
 def tts_transcription(request):
     text = request.data.get('text')
@@ -38,9 +51,13 @@ def tts_transcription(request):
     return Response(serializer.data, status=status.HTTP_200_OK)
     # return Response('hello', status=status.HTTP_200_OK)
 
+"""
+Delete method to empty folders where media assets are stored,
+in this case the audio outputs
+"""
 @api_view(['DELETE'])
 def empty_folder(request):
-    folder_input = 'Audio/'
+    folder_input = '/vol/web/media'
     for filename in os.listdir(folder_input):
         file_path = os.path.join(folder_input, filename)
         try:

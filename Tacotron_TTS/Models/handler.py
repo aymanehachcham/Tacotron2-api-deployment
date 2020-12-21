@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 
 _WORK_DIR = 'Models/'
 _MODEL_DIR = 'model_checkpoints'
-_AUDIO_DIR = 'Audio/'
+_AUDIO_DIR = '/vol/web/media'
 
 tacotron_hparams = Hparams({
     'mask_padding': True,
@@ -130,8 +130,9 @@ class TacotronHandler(nn.Module):
 
     def postprocess(self, inference_output):
         audio_numpy = inference_output[0].data.cpu().numpy()
-        path = os.path.join(_AUDIO_DIR, 'tts_output_{}.wav'.format(uuid.uuid1()))
+        output_name = 'tts_output_{}.wav'.format(uuid.uuid1())
+        path = os.path.join(_AUDIO_DIR, output_name)
         print(path)
         write(path, tacotron_hparams.sampling_rate, audio_numpy)
-        return path
+        return 'static/'+ output_name
 
