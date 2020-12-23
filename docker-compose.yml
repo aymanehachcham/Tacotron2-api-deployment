@@ -1,13 +1,24 @@
 version: '3.7'
 
 services:
-  api_app:
+  api:
     build:
       context: .
-    ports:
-    - "8000:8000"
+      dockerfile: Dockerfile
     volumes:
+    - static_data:/vol/web
     - ./Tacotron_TTS:/tacotron_app
-    command: sh -c "ptyhon manage.py runserver 0.0.0.0:8000"
     environment:
-      - DEBUG=1
+      - ALLOWED_HOSTS=127.0.0.1,localhost
+
+  nginx:
+    build: ./nginx
+    volumes:
+    - static_data:/vol/static
+    ports:
+    - "8080:8080"
+    depends_on:
+      - api
+
+volumes:
+  static_data:

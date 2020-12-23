@@ -20,6 +20,11 @@ _WORK_DIR = 'Models/'
 _MODEL_DIR = 'model_checkpoints'
 _AUDIO_DIR = '/vol/web/media'
 
+
+"""
+Tacotron hyperparameters needed to initialize the
+pretrained version of the model
+"""
 tacotron_hparams = Hparams({
     'mask_padding': True,
     'fp16_run': False,
@@ -46,6 +51,9 @@ tacotron_hparams = Hparams({
     'sampling_rate': 22050
 })
 
+"""
+Waveglow Vocoder hyperparameters
+"""
 waveglow_params = Hparams({
     'n_mel_channels': 80,
     'n_flows': 12,
@@ -60,6 +68,15 @@ WN_config = Hparams({
     'kernel_size': 3
 })
 
+"""
+Tacotron Handler Class: Main role is to initialize Tacotron2 and Waveglow
+for inference use. The class handles or manages the multiple stages of the process by defining:
+    - load_model method: Loads and maps the corresponding checkpoints and state_dict to Tacotron and Waveglow
+    - initialize: Initialize respective model states.
+    - preprocess: gets textual content ready to be fed as an input for Tacotron
+    - inference: runs Tacotron and WAveglow inference and returns an audio output
+    - postprocess: saves the returned audio output to a local folder (Docker FS local folder /vol/web/media) 
+"""
 class TacotronHandler(nn.Module):
     def __init__(self):
         super().__init__()
@@ -134,5 +151,5 @@ class TacotronHandler(nn.Module):
         path = os.path.join(_AUDIO_DIR, output_name)
         print(path)
         write(path, tacotron_hparams.sampling_rate, audio_numpy)
-        return 'static/'+ output_name
+        return 'API/audio/'+ output_name
 

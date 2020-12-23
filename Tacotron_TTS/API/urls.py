@@ -12,4 +12,4 @@ urlpatterns = [
     path(r'tts/', views.tts_transcription),
     path(r'clean', views.empty_folder)
 
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+]

@@ -19,4 +19,8 @@ if [ "$#" -eq 0 ]; then
   pip install -r /requirements.txt
 fi
 
-uswgi --socket :8000 --master --enable-threads --module Tacotron_TTS.wsgi
+python manage.py migrate --no-input
+python manage.py collectstatic --no-input
+
+gunicorn Tacotron_TTS.wsgi:application --bind 0.0.0.0:8000
+#python manage.py runserver 0.0.0.0:8000

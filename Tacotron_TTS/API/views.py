@@ -46,10 +46,8 @@ def tts_transcription(request):
         text_content=text,
         inference_time=inference_time
     )
-    audio.save()
     serializer = TTSOutputSerializer(audio)
     return Response(serializer.data, status=status.HTTP_200_OK)
-    # return Response('hello', status=status.HTTP_200_OK)
 
 """
 Delete method to empty folders where media assets are stored,
