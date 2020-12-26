@@ -1,6 +1,6 @@
 # Build a Django Rest API to serve an end-to-end speech synthesizer and deploy a production-ready  version leveraging Docker, Gunicorn and Nginx
 
-![Repo Logo](images/Schema Project.png)
+![Repo Logo](images/shema.png)
 
 ## Install and run the project
 
